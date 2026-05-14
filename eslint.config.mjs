@@ -16,4 +16,10 @@ export default [
     },
   },
   pluginReact.configs.flat.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      'react/react-in-jsx-scope': 'off',
+    },
+  },
 ];

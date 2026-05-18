@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 type BannerAdSlotProps = {
-  placement: 'home_bottom' | 'result_bottom';
+  placement: 'home_bottom' | 'result_bottom' | 'test_bottom';
 };
 
 // Placeholder — real implementation uses @apps-in-toss/framework InlineAd

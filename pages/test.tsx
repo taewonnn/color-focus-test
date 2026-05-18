@@ -1,6 +1,7 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { createRoute, useNavigation } from '@granite-js/react-native';
+import { BannerAdSlot } from '../src/components/BannerAdSlot';
 import { ColorChoiceButton } from '../src/components/ColorChoiceButton';
 import { ColorWordCard } from '../src/components/ColorWordCard';
 import { TimerBar } from '../src/components/TimerBar';
@@ -24,6 +25,9 @@ function TestScreen() {
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={12}>
+            <Text style={styles.backButton}>{'<'}</Text>
+          </TouchableOpacity>
           <View style={styles.statusRow}>
             <Text style={[styles.timerText, isLow && styles.timerLow]}>
               {remainingSeconds}초
@@ -76,6 +80,7 @@ function TestScreen() {
               />
             ))}
           </View>
+          <BannerAdSlot placement="test_bottom" />
         </View>
       </View>
     </SafeAreaView>
@@ -84,6 +89,7 @@ function TestScreen() {
 
 export const Route = createRoute('/test', {
   component: TestScreen,
+  screenOptions: { headerShown: false },
 });
 
 const styles = StyleSheet.create({
@@ -99,6 +105,12 @@ const styles = StyleSheet.create({
   },
   header: {
     gap: 10,
+  },
+  backButton: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
   },
   statusRow: {
     flexDirection: 'row',

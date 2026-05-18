@@ -10,20 +10,22 @@ import {
 } from 'react-native';
 import { createRoute, useNavigation, useParams } from '@granite-js/react-native';
 import { BannerAdSlot } from '../src/components/BannerAdSlot';
+import { useFullScreenAd } from '../src/hooks/useFullScreenAd';
 import { ResultSummary } from '../src/components/ResultSummary';
 import type { TestResult } from '../src/types';
+
+const REPLAY_AD_GROUP_ID = 'ait.dev.43daa14da3ae487b';
 
 function ResultScreen() {
   const navigation = useNavigation();
   const { result } = useParams({ from: '/result' }) as { result: TestResult };
+  const { show: showAd } = useFullScreenAd(REPLAY_AD_GROUP_ID);
 
   const handleReplay = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (navigation as any).replace('/test');
-  };
-
-  const handleDetailResult = () => {
-    navigation.navigate('/detail-result', { result });
+    showAd(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (navigation as any).replace('/test');
+    });
   };
 
   const handleShare = async () => {
@@ -52,21 +54,7 @@ function ResultScreen() {
 
         <View style={styles.actions}>
           <TouchableOpacity style={styles.primaryButton} onPress={handleReplay} activeOpacity={0.85}>
-            <Text style={styles.primaryButtonText}>다시 하기</Text>
-          </TouchableOpacity>
-
-          <View style={styles.adHint}>
-            <Text style={styles.adHintText}>
-              광고를 보면 정답률, 반응속도, 개선 팁을 확인할 수 있어요.
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={handleDetailResult}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.secondaryButtonText}>광고 보고 상세 분석 보기</Text>
+            <Text style={styles.primaryButtonText}>광고 보고 다시 하기</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.secondaryButton} onPress={handleShare} activeOpacity={0.85}>
@@ -82,6 +70,7 @@ function ResultScreen() {
 
 export const Route = createRoute('/result', {
   component: ResultScreen,
+  screenOptions: { headerShown: false },
   validateParams: (params: unknown) => params as { result: TestResult },
 });
 
@@ -98,19 +87,6 @@ const styles = StyleSheet.create({
   actions: {
     marginTop: 32,
     gap: 12,
-  },
-  adHint: {
-    backgroundColor: '#F9FAFB',
-    borderRadius: 10,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  adHintText: {
-    fontSize: 13,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 18,
   },
   primaryButton: {
     height: 56,

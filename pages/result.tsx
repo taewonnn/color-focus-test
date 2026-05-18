@@ -30,14 +30,25 @@ function ResultScreen() {
 
   const handleShare = async () => {
     try {
+      let shareLink = '';
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { getTossShareLink } = require('@apps-in-toss/native-modules');
+        shareLink = await getTossShareLink('intoss://color-focus-test');
+      } catch {
+        // 링크 생성 실패 시 텍스트만 공유
+      }
+
+      const summary = [
+        '청기백기 색깔 테스트 결과!',
+        `집중력 등급: ${result.grade}`,
+        `점수: ${result.score}점`,
+        `정답률: ${Math.round(result.accuracy * 100)}%`,
+        `평균 반응속도: ${result.averageReactionMs != null ? `${result.averageReactionMs}ms` : '-'}`,
+      ].join('\n');
+
       await Share.share({
-        message: [
-          '청기백기 색깔 테스트 결과!',
-          `집중력 등급: ${result.grade}`,
-          `점수: ${result.score}점`,
-          `정답률: ${Math.round(result.accuracy * 100)}%`,
-          `평균 반응속도: ${result.averageReactionMs != null ? `${result.averageReactionMs}ms` : '-'}`,
-        ].join('\n'),
+        message: shareLink ? `${summary}\n\n${shareLink}` : summary,
       });
     } catch {
       // share API error - noop

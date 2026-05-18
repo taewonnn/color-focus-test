@@ -1,5 +1,6 @@
 import { router } from '@granite-js/plugin-router';
 import { hermes } from '@granite-js/plugin-hermes';
+import { appsInToss } from '@apps-in-toss/plugins';
 import { defineConfig } from '@granite-js/react-native/config';
 
 export default defineConfig({

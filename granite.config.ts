@@ -5,5 +5,17 @@ import { defineConfig } from '@granite-js/react-native/config';
 export default defineConfig({
   appName: 'color-focus-test',
   scheme: 'intoss',
-  plugins: [router(), hermes()],
+  plugins: [
+    router(), 
+    hermes(), 
+    ...appsInToss({
+      appType: 'general',
+      brand: {
+        displayName: '청기 백기',
+        primaryColor: '#3182F6',
+        icon: 'https://static.toss.im/appsintoss/33837/6e73dee2-c778-416a-b6b7-e8b24cc30019.png',
+      },
+      permissions: [],
+    }),
+  ],
 });

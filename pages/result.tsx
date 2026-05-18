@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { createRoute, useNavigation, useParams } from '@granite-js/react-native';
+import { closeView } from '@apps-in-toss/native-modules';
 import { BannerAdSlot } from '../src/components/BannerAdSlot';
 import { useFullScreenAd } from '../src/hooks/useFullScreenAd';
 import { ResultSummary } from '../src/components/ResultSummary';
@@ -57,6 +58,9 @@ function ResultScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <TouchableOpacity style={styles.backButton} onPress={closeView} hitSlop={12}>
+        <Text style={styles.backButtonText}>{'<'}</Text>
+      </TouchableOpacity>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -89,6 +93,17 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: '#F8FAFC',
+  },
+  backButton: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 4,
+    alignSelf: 'flex-start',
+  },
+  backButtonText: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#111827',
   },
   scroll: {
     paddingHorizontal: 20,

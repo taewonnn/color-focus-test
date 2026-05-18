@@ -14,7 +14,7 @@ import { useFullScreenAd } from '../src/hooks/useFullScreenAd';
 import { ResultSummary } from '../src/components/ResultSummary';
 import type { TestResult } from '../src/types';
 
-const REPLAY_AD_GROUP_ID = 'ait.dev.43daa14da3ae487b';
+const REPLAY_AD_GROUP_ID = 'ait.v2.live.6fcde824549b486a';
 
 function ResultScreen() {
   const navigation = useNavigation();

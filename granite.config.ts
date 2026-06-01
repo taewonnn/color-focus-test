@@ -17,6 +17,9 @@ export default defineConfig({
         icon: 'https://static.toss.im/appsintoss/33837/6e73dee2-c778-416a-b6b7-e8b24cc30019.png',
       },
       permissions: [],
+      navigationBar: {
+        withBackButton: true,
+      },
     }),
   ],
 });

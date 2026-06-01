@@ -1,12 +1,13 @@
 import React, { type PropsWithChildren } from 'react';
-import { Granite, type InitialProps } from '@granite-js/react-native';
+import { AppsInToss } from '@apps-in-toss/framework';
+import { type InitialProps } from '@granite-js/react-native';
 import { context } from '../require.context';
+import { ReplayGateProvider } from './context/ReplayGateContext';
 
 function AppContainer({ children }: PropsWithChildren<InitialProps>) {
-  return <>{children}</>;
+  return <ReplayGateProvider>{children}</ReplayGateProvider>;
 }
 
-export default Granite.registerApp(AppContainer, {
-  appName: 'color-focus-test',
+export default AppsInToss.registerApp(AppContainer, {
   context,
 });

@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { createRoute, useNavigation, useParams } from '@granite-js/react-native';
-import { closeView } from '@apps-in-toss/native-modules';
+import { createRoute, useBackEvent, useNavigation, useParams } from '@granite-js/react-native';
 import { BannerAdSlot } from '../src/components/BannerAdSlot';
+import { useReplayGate } from '../src/context/ReplayGateContext';
 import { useFullScreenAd } from '../src/hooks/useFullScreenAd';
 import { ResultSummary } from '../src/components/ResultSummary';
 import type { TestResult } from '../src/types';
@@ -19,14 +19,38 @@ const REPLAY_AD_GROUP_ID = 'ait.v2.live.6fcde824549b486a';
 
 function ResultScreen() {
   const navigation = useNavigation();
+  const backEvent = useBackEvent();
+  const { requireReplay, clearReplayRequirement } = useReplayGate();
   const { result } = useParams({ from: '/result' }) as { result: TestResult };
-  const { show: showAd } = useFullScreenAd(REPLAY_AD_GROUP_ID);
+  const { show: showAd, isReady } = useFullScreenAd(REPLAY_AD_GROUP_ID);
+
+  React.useEffect(() => {
+    requireReplay();
+  }, [requireReplay]);
+
+  React.useEffect(() => {
+    const handleBack = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (navigation as any).replace('/');
+    };
+
+    backEvent.addEventListener(handleBack);
+
+    return () => {
+      backEvent.removeEventListener(handleBack);
+    };
+  }, [backEvent, navigation]);
 
   const handleReplay = () => {
-    showAd(() => {
+    const opened = showAd(() => {
+      clearReplayRequirement();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (navigation as any).replace('/test');
     });
+
+    if (!opened) {
+      return;
+    }
   };
 
   const handleShare = async () => {
@@ -58,9 +82,6 @@ function ResultScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <TouchableOpacity style={styles.backButton} onPress={closeView} hitSlop={12}>
-        <Text style={styles.backButtonText}>{'<'}</Text>
-      </TouchableOpacity>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -68,8 +89,15 @@ function ResultScreen() {
         <ResultSummary result={result} />
 
         <View style={styles.actions}>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleReplay} activeOpacity={0.85}>
-            <Text style={styles.primaryButtonText}>광고 보고 다시 하기</Text>
+          <TouchableOpacity
+            style={[styles.primaryButton, !isReady && styles.primaryButtonDisabled]}
+            onPress={handleReplay}
+            activeOpacity={0.85}
+            disabled={!isReady}
+          >
+            <Text style={styles.primaryButtonText}>
+              {isReady ? '광고 보고 다시 하기' : '광고 준비 중...'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.secondaryButton} onPress={handleShare} activeOpacity={0.85}>
@@ -85,7 +113,6 @@ function ResultScreen() {
 
 export const Route = createRoute('/result', {
   component: ResultScreen,
-  screenOptions: { headerShown: false },
   validateParams: (params: unknown) => params as { result: TestResult },
 });
 
@@ -94,20 +121,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
-  backButton: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 4,
-    alignSelf: 'flex-start',
-  },
-  backButtonText: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#111827',
-  },
   scroll: {
     paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingTop: 20,
     paddingBottom: 32,
   },
   actions: {
@@ -120,6 +136,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#111827',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  primaryButtonDisabled: {
+    backgroundColor: '#9CA3AF',
   },
   primaryButtonText: {
     fontSize: 17,

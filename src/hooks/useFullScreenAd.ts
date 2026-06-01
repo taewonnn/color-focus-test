@@ -1,42 +1,63 @@
 import { loadFullScreenAd, showFullScreenAd } from '@apps-in-toss/framework';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function useFullScreenAd(adGroupId: string) {
   const isLoadedRef = useRef(false);
+  const [isSupported, setIsSupported] = useState(loadFullScreenAd.isSupported());
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (!loadFullScreenAd.isSupported()) return;
+    const supported = loadFullScreenAd.isSupported();
+    setIsSupported(supported);
+    isLoadedRef.current = false;
+    setIsReady(false);
+
+    if (!supported) return;
 
     const unregister = loadFullScreenAd({
       options: { adGroupId },
       onEvent: (event) => {
-        if (event.type === 'loaded') isLoadedRef.current = true;
+        if (event.type === 'loaded') {
+          isLoadedRef.current = true;
+          setIsReady(true);
+        }
       },
-      onError: () => {},
+      onError: () => {
+        isLoadedRef.current = false;
+        setIsReady(false);
+      },
     });
 
     return () => {
       isLoadedRef.current = false;
+      setIsReady(false);
       unregister();
     };
   }, [adGroupId]);
 
   const show = (onDismissed: () => void) => {
     if (!showFullScreenAd.isSupported() || !isLoadedRef.current) {
-      onDismissed();
-      return;
+      return false;
     }
+
+    isLoadedRef.current = false;
+    setIsReady(false);
 
     showFullScreenAd({
       options: { adGroupId },
       onEvent: (event) => {
-        if (event.type === 'dismissed' || event.type === 'failedToShow') {
+        if (event.type === 'dismissed') {
           onDismissed();
         }
       },
-      onError: () => onDismissed(),
+      onError: () => {
+        isLoadedRef.current = false;
+        setIsReady(false);
+      },
     });
+
+    return true;
   };
 
-  return { show };
+  return { show, isReady, isSupported };
 }
